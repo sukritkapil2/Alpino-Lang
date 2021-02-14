@@ -6,6 +6,8 @@
 
 #define KEYWORDS_SIZE 10
 
+int line_number = 1;
+
 //store the reserved keywords of the language in an array
 char* keywords[] = {"fun", "var", "return", "if", "elif", "break", "continue", "loop", "from", "to"};
 
@@ -19,12 +21,77 @@ char peek_next_char(FILE* fptr) {
 
 // increments the file pointer by one to the right
 void move_pointer_next(FILE* fptr) {
-    fseek(fptr, 1, SEEK_CUR);
+    char c = fgetc(fptr);
+    if(c == '\n') line_number++;
 }
 
 // decrements the file pointer by one to the left
 void move_pointer_back(FILE* fptr) {
     fseek(fptr, -1, SEEK_CUR);
+}
+
+//skips till the c_next is a non whitespace character
+void skip_white_spaces(FILE* fptr) {
+    char c_next = peek_next_char(fptr);
+    while(c_next == ' ' || c_next == '\n') {
+        move_pointer_next(fptr);
+        c_next = peek_next_char(fptr);
+    }
+}
+
+void lexer_assignment_found(char c, FILE* fptr) {
+    printf("TK-assignment, string =, line number %d\n", line_number);
+
+    char c_next = peek_next_char(fptr);
+    while(c_next != ' ' && c_next != '\n') {
+        move_pointer_next(fptr);
+        c_next = peek_next_char(fptr);
+    }
+    move_pointer_next(fptr);
+
+    c_next = peek_next_char(fptr);
+    //printf("Next char: %c\n", c_next);
+
+    //checks if the next character is an identifier
+    if((c_next >= 65 && c_next <= 90) || (c_next >= 97 && c_next <= 122) || c_next == '_') {
+        return;
+    } else if (c_next == '+' || c_next == '-' || (c_next >= 48 && c_next <= 57)) {
+        //the lexeme is an integer literal
+        char str[] = "";
+        if(c_next == '+' || c_next == '-') {
+            strncat(str, &c_next, 1);
+            move_pointer_next(fptr);
+            c_next = peek_next_char(fptr);
+            while(c_next == ' ' || c_next == '\n') {
+                move_pointer_next(fptr);
+                c_next = peek_next_char(fptr);
+            }
+        }
+
+        while(c_next >= 48 && c_next <= 57) {
+            strncat(str, &c_next, 1);
+            move_pointer_next(fptr);
+            c_next = peek_next_char(fptr);
+        }
+        move_pointer_next(fptr);
+
+        char* s_copy;
+        s_copy = (char*)malloc(100*sizeof(char));
+        strcpy(s_copy, str);
+
+        char str2[100] = "TK-integer, string ";
+        strcat(str2, s_copy);
+
+        char* s;
+        s = (char*)malloc(200*sizeof(char));
+        strcpy(s, str2);
+
+        printf("%s, line number %d\n", s, line_number);
+        return;
+
+    } else {
+        //error in finding token
+    }
 }
 
 char* lexer_alphabet_found(char c, FILE* fptr) {
@@ -73,8 +140,8 @@ char* lexer_alphabet_found(char c, FILE* fptr) {
     return s;
 }
 
-char* lexer_operator_found(char c, FILE* fptr) {
-    // here we check for two possibilities - whether the lexeme is an operator or a comment
+void lexer_operator_found(char c, FILE* fptr) {
+    // here we check for these possibilities - whether the lexeme is an operator or a comment or an integer
     char c_next = peek_next_char(fptr);
 
     switch(c) {
@@ -87,49 +154,81 @@ char* lexer_operator_found(char c, FILE* fptr) {
                     move_pointer_next(fptr);
                     c_next = peek_next_char(fptr);
                 }
-                return "TK-comment, string //";
+                printf("TK-comment, string //, line number %d\n", line_number);
+                return;
             } else break;
 
         case '+':
             if(c_next == '+') {
                 move_pointer_next(fptr);
-                return "TK-operator, string ++";
+                printf("TK-operator, string ++, line number %d\n", line_number);
+                return;
+            } else {
+                printf("TK-operator, string +, line number %d\n", line_number);
+                skip_white_spaces(fptr);
+
+                //we have an integer literal
+                if(c_next >= 48 && c_next <= 57) {
+                    char str[] = "";
+                    
+                    while(c_next >= 48 && c_next <= 57) {
+                        strncat(str, &c_next, 1);
+                        move_pointer_next(fptr);
+                        c_next = peek_next_char(fptr);
+                    }
+
+                    printf("TK-integer, string %s, line number %d\n", str, line_number);
+                    return;
+                }
+            }
+
+        case '-':
+            if(c_next == '-') {
+                move_pointer_next(fptr);
+                printf("TK-operator, string --, line number %d\n", line_number);
+                return;
             } else break;
 
         case ':':
             if(c_next == '=') {
                 move_pointer_next(fptr);
-                return "TK-operator, string :=";
+                printf("TK-operator, string :=, line number %d\n", line_number);
+                return;
             } else break;
         
         case '>':
             if(c_next == '=') {
                 move_pointer_next(fptr);
-                return "TK-operator, string >=";
+                printf("TK-operator, string >=, line number %d\n", line_number);
+                return;
             } else break;
 
         case '<':
             if(c_next == '=') {
                 move_pointer_next(fptr);
-                return "TK-operator, string <=";
+                printf("TK-operator, string <=, line number %d\n", line_number);
+                return;
             } else break;
 
         case '!':
             if(c_next == '=') {
                 move_pointer_next(fptr);
-                return "TK-operator, string !=";
+                printf("TK-operator, string !=, line number %d\n", line_number);
+                return;
             } else break;
 
         case '&':
             if(c_next == '&') {
                 move_pointer_next(fptr);
-                return "TK-operator, string &&";
+                printf("TK-operator, string &&, line number %d\n", line_number);
+                return;
             } else break;
 
         case '|':
             if(c_next == '|') {
                 move_pointer_next(fptr);
-                return "TK-operator, string ||";
+                printf("TK-operator, string ||, line number %d\n", line_number);
+                return;
             } else break;
 
         default:
@@ -142,14 +241,13 @@ char* lexer_operator_found(char c, FILE* fptr) {
     s = (char*)malloc(24*sizeof(char));
     strcpy(s, s_temp);
 
-    return s;
+    printf("%s, line number %d\n", s, line_number);
 }
 
 int main() {
     //pointer to a file
     char c;
     FILE* fptr;
-    int line_number = 1;
 
     if((fptr = fopen("./input.al", "r")) == NULL) {
         printf("Error opening the file!\n");
@@ -163,21 +261,24 @@ int main() {
     while(c != EOF) {
         //printf("%c\n", c);
         //printf("%c", c);
-        if(c == '\n') line_number++;
+        //if(c == '\n') line_number++;
         move_pointer_next(fptr);
         
         if(c == ' ' || c == '\n') {
             
         }
         //checks if the lexeme is a keyword or an identifier
-        else if((c >= 65 && c <= 90) || (c >= 97 && c <= 122)) {
+        else if((c >= 65 && c <= 90) || (c >= 97 && c <= 122) || c == '_') {
             char* str = lexer_alphabet_found(c, fptr);
             printf("%s, line number %d\n", str, line_number);
         }
         //checks if the lexeme is an operator or a comment
         else if(c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '>' || c == '<' || c == '!' || c == '?' || c == ':' || c == '&' || c == '|') {
-            char* str = lexer_operator_found(c, fptr);
-            printf("%s, line number %d\n", str, line_number);
+            lexer_operator_found(c, fptr);
+        }
+        //checks if the lexeme is an assignment operator
+        else if(c == '=') {
+            lexer_assignment_found(c, fptr);
         }
 
         
