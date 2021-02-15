@@ -4,7 +4,7 @@
 //function
 fun addFive(x) {
     var z = x+5;
-    x++;
+    x+++;
     return z;
 }
 

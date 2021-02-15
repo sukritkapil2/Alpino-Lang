@@ -160,13 +160,12 @@ void lexer_operator_found(char c, FILE* fptr) {
                 }
                 printf("TK-comment, string //, line number %d\n", line_number);
                 return;
-            } else break;
+            } else return;
 
         case '+':
             if(c_next == '+') {
                 move_pointer_next(fptr);
                 printf("TK-operator, string ++, line number %d\n", line_number);
-                return;
             } else {
                 printf("TK-operator, string +, line number %d\n", line_number);
                 skip_white_spaces(fptr);
@@ -183,15 +182,14 @@ void lexer_operator_found(char c, FILE* fptr) {
                     }
 
                     printf("TK-integer, string %s, line number %d\n", str, line_number);
-                    return;
                 }
             }
+            return;
 
         case '-':
             if(c_next == '-') {
                 move_pointer_next(fptr);
                 printf("TK-operator, string --, line number %d\n", line_number);
-                return;
             } else {
                 printf("TK-operator, string -, line number %d\n", line_number);
                 skip_white_spaces(fptr);
@@ -208,63 +206,69 @@ void lexer_operator_found(char c, FILE* fptr) {
                     }
 
                     printf("TK-integer, string %s, line number %d\n", str, line_number);
-                    return;
                 }
             }
+            return;
 
         case ':':
             if(c_next == '=') {
                 move_pointer_next(fptr);
                 printf("TK-operator, string :=, line number %d\n", line_number);
-                return;
-            } else break;
+            } else {
+                printf("TK-operator, string :, line number %d\n", line_number);
+            }
+            return;
         
         case '>':
             if(c_next == '=') {
                 move_pointer_next(fptr);
                 printf("TK-operator, string >=, line number %d\n", line_number);
-                return;
-            } else break;
+            } else {
+                printf("TK-operator, string >, line number %d\n", line_number);
+            }
+            return;
 
         case '<':
             if(c_next == '=') {
                 move_pointer_next(fptr);
                 printf("TK-operator, string <=, line number %d\n", line_number);
-                return;
-            } else break;
+            } else {
+                printf("TK-operator, string <, line number %d\n", line_number);
+            }
+            return;
 
         case '!':
             if(c_next == '=') {
                 move_pointer_next(fptr);
                 printf("TK-operator, string !=, line number %d\n", line_number);
-                return;
-            } else break;
+            } else {
+                printf("TK-operator, string !, line number %d\n", line_number);
+            }
+            return;
 
         case '&':
             if(c_next == '&') {
                 move_pointer_next(fptr);
                 printf("TK-operator, string &&, line number %d\n", line_number);
-                return;
-            } else break;
+            } else {
+                printf("TK-operator, string &, line number %d\n", line_number);
+            }
+            return;
 
         case '|':
             if(c_next == '|') {
                 move_pointer_next(fptr);
                 printf("TK-operator, string ||, line number %d\n", line_number);
-                return;
-            } else break;
+            } else {
+                printf("TK-operator, string |, line number %d\n", line_number);
+            }
+            return;
 
         default:
             break;
     }
 
-    char s_temp[24] = "TK-operator, string ";
-    strncat(s_temp, &c, 1);
-    char* s;
-    s = (char*)malloc(24*sizeof(char));
-    strcpy(s, s_temp);
-
-    printf("%s, line number %d\n", s, line_number);
+    return;
 }
 
 int main() {
