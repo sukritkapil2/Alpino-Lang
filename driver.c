@@ -1,5 +1,6 @@
 // this c file scans through the input alpino code and seperates appropriate lexemes
 // which are then sent to the lexer that return the corresponding token
+//D's code
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,7 +52,7 @@ void lexer_digit_found(char c, FILE* fptr) {
     strncat(str, &c, 1);
 
     char c_next = peek_next_char(fptr);
-                    
+
     while(c_next >= 48 && c_next <= 57) {
         strncat(str, &c_next, 1);
         move_pointer_next(fptr);
@@ -136,7 +137,7 @@ void lexer_assignment_found(char c, FILE* fptr) {
 
 void lexer_alphabet_found(char c, FILE* fptr) {
     // the lexeme can either be a keyword or an identifier
-    
+
     // s_temp is the word character array which will store the lexeme
     char s_temp[] = "";
     char c_next = c;
@@ -212,7 +213,7 @@ void lexer_operator_found(char c, FILE* fptr) {
                 c_next = peek_next_char(fptr);
                 if(c_next >= 48 && c_next <= 57) {
                     char str[] = "";
-                    
+
                     while(c_next >= 48 && c_next <= 57) {
                         strncat(str, &c_next, 1);
                         move_pointer_next(fptr);
@@ -236,7 +237,7 @@ void lexer_operator_found(char c, FILE* fptr) {
                 c_next = peek_next_char(fptr);
                 if(c_next >= 48 && c_next <= 57) {
                     char str[] = "";
-                    
+
                     while(c_next >= 48 && c_next <= 57) {
                         strncat(str, &c_next, 1);
                         move_pointer_next(fptr);
@@ -256,7 +257,7 @@ void lexer_operator_found(char c, FILE* fptr) {
                 printf("TK-operator, string :, line number %d\n", line_number);
             }
             return;
-        
+
         case '>':
             if(c_next == '=') {
                 move_pointer_next(fptr);
@@ -322,17 +323,17 @@ int main() {
 
     // peek the next character, without moving the file pointer
     c = peek_next_char(fptr);
-    
+
     // loop through all the characters in the file
     while(c != EOF) {
-        
+
         // move the pointer to the current character, so now we are pointing to the current character
         move_pointer_next(fptr);
-        
+
         if(c == ' ' || c == '\n') {
-            
+
         }
-        // checks if the lexeme is an integer literal 
+        // checks if the lexeme is an integer literal
         else if(c >= 48 && c <= 57) {
             lexer_digit_found(c, fptr);
         }
@@ -357,7 +358,7 @@ int main() {
             lexer_assignment_found(c, fptr);
         }
 
-        
+
         c = peek_next_char(fptr);
     }
 
