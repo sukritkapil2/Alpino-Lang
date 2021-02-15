@@ -29,7 +29,7 @@ if(x == 10) {
 }
 
 //loop statement
-loop i from 1 to 10 {
+loop(i = 1;i <= 10; i++) {
     print(i);
     if(i == 6) {
         break;

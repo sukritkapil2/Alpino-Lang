@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define KEYWORDS_SIZE 10
+#define KEYWORDS_SIZE 8
 
 int line_number = 1;
 
 // store the reserved keywords of the language in an array
-char* keywords[] = {"fun", "var", "return", "if", "elif", "break", "continue", "loop", "from", "to"};
+char* keywords[] = {"fun", "var", "return", "if", "elif", "break", "continue", "loop"};
 
 // returns the next character without moving the file pointer
 char peek_next_char(FILE* fptr) {
@@ -43,6 +43,44 @@ void skip_white_spaces(FILE* fptr) {
 
 
 // after all the methods, the file pointer should point to the last valid character of the lexeme found
+
+void lexer_digit_found(char c, FILE* fptr) {
+    // TODO - include floating point numbers
+    // stores the integer literal
+    char str[1000] = "";
+    strncat(str, &c, 1);
+
+    char c_next = peek_next_char(fptr);
+                    
+    while(c_next >= 48 && c_next <= 57) {
+        strncat(str, &c_next, 1);
+        move_pointer_next(fptr);
+        c_next = peek_next_char(fptr);
+    }
+
+    printf("TK-integer, string %s, line number %d\n", str, line_number);
+    return;
+}
+
+void lexer_string_found(char c, FILE* fptr) {
+    // this store the complete string lexeme
+    char str[1000] = "";
+    strncat(str, &c, 1);
+
+    char c_next = peek_next_char(fptr);
+
+    while(c_next != c) {
+        strncat(str, &c_next, 1);
+        move_pointer_next(fptr);
+        c_next = peek_next_char(fptr);
+    }
+
+    strncat(str, &c, 1);
+    move_pointer_next(fptr);
+
+    printf("TK-string, string %s, line number %d\n", str, line_number);
+    return;
+}
 
 void lexer_assignment_found(char c, FILE* fptr) {
     char c_next = peek_next_char(fptr);
@@ -78,14 +116,14 @@ void lexer_assignment_found(char c, FILE* fptr) {
         }
 
         char* s_copy;
-        s_copy = (char*)malloc(100*sizeof(char));
+        s_copy = (char*)malloc(1000*sizeof(char));
         strcpy(s_copy, str);
 
-        char str2[100] = "TK-integer, string ";
+        char str2[1000] = "TK-integer, string ";
         strcat(str2, s_copy);
 
         char* s;
-        s = (char*)malloc(200*sizeof(char));
+        s = (char*)malloc(1000*sizeof(char));
         strcpy(s, str2);
 
         printf("%s, line number %d\n", s, line_number);
@@ -113,17 +151,17 @@ void lexer_alphabet_found(char c, FILE* fptr) {
 
     // save a copy of s_temp array as a char pointer
     char* s_copy;
-    s_copy = (char*)malloc(100*sizeof(char));
+    s_copy = (char*)malloc(1000*sizeof(char));
     strcpy(s_copy, s_temp);
 
     // search for the word in the keywords array
     for(int i = 0;i < KEYWORDS_SIZE; i++) {
         if(strcmp(keywords[i], s_temp) == 0) {
-            char str[100] = "TK-keyword, string ";
+            char str[1000] = "TK-keyword, string ";
             strcat(str, keywords[i]);
 
             char* s;
-            s = (char*)malloc(100*sizeof(char));
+            s = (char*)malloc(1000*sizeof(char));
             strcpy(s, str);
 
             printf("%s, line number %d\n", s, line_number);
@@ -132,11 +170,11 @@ void lexer_alphabet_found(char c, FILE* fptr) {
     }
 
     // if the lexeme is not a keyword
-    char str[100] = "TK-identifier, string ";
+    char str[1000] = "TK-identifier, string ";
     strcat(str, s_copy);
 
     char* s;
-    s = (char*)malloc(200*sizeof(char));
+    s = (char*)malloc(1000*sizeof(char));
     strcpy(s, str);
 
     printf("%s, line number %d\n", s, line_number);
@@ -294,6 +332,18 @@ int main() {
         if(c == ' ' || c == '\n') {
             
         }
+        // checks if the lexeme is an integer literal 
+        else if(c >= 48 && c <= 57) {
+            lexer_digit_found(c, fptr);
+        }
+        // checks if the lexeme is a string literal
+        else if(c == '"' || c == '\'') {
+            lexer_string_found(c, fptr);
+        }
+        // checks if the lexeme is a delimiter
+        else if(c == '{' || c == '}' || c == '(' || c == ')' || c == ';' || c == ',') {
+            printf("TK-delimiter, string %c, line number %d\n", c, line_number);
+        }
         // checks if the lexeme is a keyword or an identifier
         else if((c >= 65 && c <= 90) || (c >= 97 && c <= 122) || c == '_') {
             lexer_alphabet_found(c, fptr);
@@ -313,6 +363,8 @@ int main() {
 
     // close the file
     fclose(fptr);
+
+    char* str = "hello";
 
     return 0;
 }
