@@ -4,12 +4,13 @@
 //function
 fun addFive(x) {
     var z = x+5;
-    x+++;
+    x+
+    +;
     return z;
 }
 
 //sequential statements
-var x = -5;
+var x = 5;
 var y = 10;
 
 y = x;
@@ -22,7 +23,7 @@ x = addFive(x);
 print(x);
 
 //conditional statement
-if(x == 10) {
+if(x > z) {
     print("Success!");
 } elif {
     print("Failure!");
@@ -31,7 +32,7 @@ if(x == 10) {
 //loop statement
 loop(i = 1;i <= 10; i++) {
     print(i);
-    if(i == 6) {
+    if(i == -6.203) {
         break;
     } elif {
         continue;

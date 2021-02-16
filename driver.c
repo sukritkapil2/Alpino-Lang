@@ -35,7 +35,6 @@ void skip_white_spaces(FILE* fptr) {
     char c_next = peek_next_char(fptr);
     if(c_next != ' ' && c_next != '\n') return;
     while(c_next == ' ' || c_next == '\n') {
-        if(c_next == '\n') line_number++;
         move_pointer_next(fptr);
         c_next = peek_next_char(fptr);
     }
@@ -44,21 +43,27 @@ void skip_white_spaces(FILE* fptr) {
 
 // after all the methods, the file pointer should point to the last valid character of the lexeme found
 
-void lexer_digit_found(char c, FILE* fptr) {
+void lexer_digit_found(char c, FILE* fptr, char fr) {
     // TODO - include floating point numbers
     // stores the integer literal
     char str[1000] = "";
+    if(fr != ' ') strncat(str, &fr, 1);
     strncat(str, &c, 1);
+
+    //number of dots encountered
+    int dot_count = 0;
 
     char c_next = peek_next_char(fptr);
                     
-    while(c_next >= 48 && c_next <= 57) {
+    while((c_next >= 48 && c_next <= 57) || c_next == '.') {
         strncat(str, &c_next, 1);
+        if(c_next == '.') dot_count++;
         move_pointer_next(fptr);
         c_next = peek_next_char(fptr);
     }
 
-    printf("TK-integer, string %s, line number %d\n", str, line_number);
+    if(dot_count == 0) printf("TK-integer, string %s, line number %d\n", str, line_number);
+    else printf("TK-float, string %s, line number %d\n", str, line_number);
     return;
 }
 
@@ -100,8 +105,10 @@ void lexer_assignment_found(char c, FILE* fptr) {
     } else if (c_next == '+' || c_next == '-' || (c_next >= 48 && c_next <= 57)) {
         // the lexeme is an integer literal
         char str[] = "";
+        char op = ' ';
 
         if(c_next == '+' || c_next == '-') {
+            op = c_next;
             strncat(str, &c_next, 1);
             move_pointer_next(fptr);
             skip_white_spaces(fptr);
@@ -109,26 +116,10 @@ void lexer_assignment_found(char c, FILE* fptr) {
 
         c_next = peek_next_char(fptr);
 
-        while(c_next >= 48 && c_next <= 57) {
-            strncat(str, &c_next, 1);
+        if(c_next >= 48 && c_next <= 57) {
             move_pointer_next(fptr);
-            c_next = peek_next_char(fptr);
+            lexer_digit_found(c_next, fptr, op);
         }
-
-        char* s_copy;
-        s_copy = (char*)malloc(1000*sizeof(char));
-        strcpy(s_copy, str);
-
-        char str2[1000] = "TK-integer, string ";
-        strcat(str2, s_copy);
-
-        char* s;
-        s = (char*)malloc(1000*sizeof(char));
-        strcpy(s, str2);
-
-        printf("%s, line number %d\n", s, line_number);
-        return;
-
     } else {
         //error in finding token
     }
@@ -211,15 +202,8 @@ void lexer_operator_found(char c, FILE* fptr) {
                 // we have an integer literal in arithmetic operation
                 c_next = peek_next_char(fptr);
                 if(c_next >= 48 && c_next <= 57) {
-                    char str[] = "";
-                    
-                    while(c_next >= 48 && c_next <= 57) {
-                        strncat(str, &c_next, 1);
-                        move_pointer_next(fptr);
-                        c_next = peek_next_char(fptr);
-                    }
-
-                    printf("TK-integer, string %s, line number %d\n", str, line_number);
+                    move_pointer_next(fptr);
+                    lexer_digit_found(c_next, fptr, ' ');
                 }
             }
             return;
@@ -235,15 +219,8 @@ void lexer_operator_found(char c, FILE* fptr) {
                 // we have an integer literal in arithmetic operation
                 c_next = peek_next_char(fptr);
                 if(c_next >= 48 && c_next <= 57) {
-                    char str[] = "";
-                    
-                    while(c_next >= 48 && c_next <= 57) {
-                        strncat(str, &c_next, 1);
-                        move_pointer_next(fptr);
-                        c_next = peek_next_char(fptr);
-                    }
-
-                    printf("TK-integer, string %s, line number %d\n", str, line_number);
+                    move_pointer_next(fptr);
+                    lexer_digit_found(c_next, fptr, ' ');
                 }
             }
             return;
@@ -264,6 +241,28 @@ void lexer_operator_found(char c, FILE* fptr) {
             } else {
                 printf("TK-operator, string >, line number %d\n", line_number);
             }
+            skip_white_spaces(fptr);
+            c_next = peek_next_char(fptr);
+
+            if (c_next == '+' || c_next == '-' || (c_next >= 48 && c_next <= 57)) {
+                // the lexeme is an integer literal
+                char str[] = "";
+                char op = ' ';
+
+                if(c_next == '+' || c_next == '-') {
+                    op = c_next;
+                    strncat(str, &c_next, 1);
+                    move_pointer_next(fptr);
+                    skip_white_spaces(fptr);
+                }
+
+                c_next = peek_next_char(fptr);
+
+                if(c_next >= 48 && c_next <= 57) {
+                    move_pointer_next(fptr);
+                    lexer_digit_found(c_next, fptr, op);
+                }
+            }
             return;
 
         case '<':
@@ -272,6 +271,28 @@ void lexer_operator_found(char c, FILE* fptr) {
                 printf("TK-operator, string <=, line number %d\n", line_number);
             } else {
                 printf("TK-operator, string <, line number %d\n", line_number);
+            }
+            skip_white_spaces(fptr);
+            c_next = peek_next_char(fptr);
+
+            if (c_next == '+' || c_next == '-' || (c_next >= 48 && c_next <= 57)) {
+                // the lexeme is an integer literal
+                char str[] = "";
+                char op = ' ';
+
+                if(c_next == '+' || c_next == '-') {
+                    op = c_next;
+                    strncat(str, &c_next, 1);
+                    move_pointer_next(fptr);
+                    skip_white_spaces(fptr);
+                }
+
+                c_next = peek_next_char(fptr);
+
+                if(c_next >= 48 && c_next <= 57) {
+                    move_pointer_next(fptr);
+                    lexer_digit_found(c_next, fptr, op);
+                }
             }
             return;
 
@@ -282,6 +303,28 @@ void lexer_operator_found(char c, FILE* fptr) {
             } else {
                 printf("TK-operator, string !, line number %d\n", line_number);
             }
+            skip_white_spaces(fptr);
+            c_next = peek_next_char(fptr);
+
+            if (c_next == '+' || c_next == '-' || (c_next >= 48 && c_next <= 57)) {
+                // the lexeme is an integer literal
+                char str[] = "";
+                char op = ' ';
+
+                if(c_next == '+' || c_next == '-') {
+                    op = c_next;
+                    strncat(str, &c_next, 1);
+                    move_pointer_next(fptr);
+                    skip_white_spaces(fptr);
+                }
+
+                c_next = peek_next_char(fptr);
+
+                if(c_next >= 48 && c_next <= 57) {
+                    move_pointer_next(fptr);
+                    lexer_digit_found(c_next, fptr, op);
+                }
+            }
             return;
 
         case '&':
@@ -291,6 +334,28 @@ void lexer_operator_found(char c, FILE* fptr) {
             } else {
                 printf("TK-operator, string &, line number %d\n", line_number);
             }
+            skip_white_spaces(fptr);
+            c_next = peek_next_char(fptr);
+
+            if (c_next == '+' || c_next == '-' || (c_next >= 48 && c_next <= 57)) {
+                // the lexeme is an integer literal
+                char str[] = "";
+                char op = ' ';
+
+                if(c_next == '+' || c_next == '-') {
+                    op = c_next;
+                    strncat(str, &c_next, 1);
+                    move_pointer_next(fptr);
+                    skip_white_spaces(fptr);
+                }
+
+                c_next = peek_next_char(fptr);
+
+                if(c_next >= 48 && c_next <= 57) {
+                    move_pointer_next(fptr);
+                    lexer_digit_found(c_next, fptr, op);
+                }
+            }
             return;
 
         case '|':
@@ -299,6 +364,28 @@ void lexer_operator_found(char c, FILE* fptr) {
                 printf("TK-operator, string ||, line number %d\n", line_number);
             } else {
                 printf("TK-operator, string |, line number %d\n", line_number);
+            }
+            skip_white_spaces(fptr);
+            c_next = peek_next_char(fptr);
+
+            if (c_next == '+' || c_next == '-' || (c_next >= 48 && c_next <= 57)) {
+                // the lexeme is an integer literal
+                char str[] = "";
+                char op = ' ';
+
+                if(c_next == '+' || c_next == '-') {
+                    op = c_next;
+                    strncat(str, &c_next, 1);
+                    move_pointer_next(fptr);
+                    skip_white_spaces(fptr);
+                }
+
+                c_next = peek_next_char(fptr);
+
+                if(c_next >= 48 && c_next <= 57) {
+                    move_pointer_next(fptr);
+                    lexer_digit_found(c_next, fptr, op);
+                }
             }
             return;
 
@@ -334,7 +421,7 @@ int main() {
         }
         // checks if the lexeme is an integer literal 
         else if(c >= 48 && c <= 57) {
-            lexer_digit_found(c, fptr);
+            lexer_digit_found(c, fptr, ' ');
         }
         // checks if the lexeme is a string literal
         else if(c == '"' || c == '\'') {
