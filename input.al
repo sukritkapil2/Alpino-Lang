@@ -10,7 +10,7 @@ fun addFive(x) {
 }
 
 //sequential statements
-var x = 5;
+var x = (45-0.5678*67)/2.0;
 var y = 10;
 
 y = x;
@@ -23,7 +23,7 @@ x = addFive(x);
 print(x);
 
 //conditional statement
-if(x > z) {
+if(x > 2.984) {
     print("Success!");
 } elif {
     print("Failure!");
