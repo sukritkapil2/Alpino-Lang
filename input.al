@@ -11,7 +11,8 @@ fun addFive(x) {
 
 //sequential statements
 var x = (45-0.5678*67)/2.0;
-var y = 10;
+var y = 0;
+x -= y;
 
 y = x;
 
