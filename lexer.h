@@ -68,13 +68,13 @@ void lexer_digit_found(char c, FILE* fptr, char fr, FILE* optr) {
         c_next = peek_next_char(fptr);
     }
 
-    if(alpha_count != 0) fprintf(optr, "ERROR - invalid integer, string %s, line number %d\n", str, line_number);
+    if(alpha_count != 0) fprintf(optr, "ERROR - invalid integer (integer should not contain alphabets), string %s, line number %d\n", str, line_number);
     else if(dot_count == 0) {
-        if(c == '0' && size > 1) fprintf(optr, "ERROR - invalid integer, string %s, line number %d\n", str, line_number);
+        if(c == '0' && size > 1) fprintf(optr, "ERROR - invalid integer (integer cannot start with 0), string %s, line number %d\n", str, line_number);
         else fprintf(optr, "TK-integer, string %s, line number %d\n", str, line_number);
     }
     else if(dot_count == 1) fprintf(optr, "TK-float, string %s, line number %d\n", str, line_number);
-    else fprintf(optr ,"ERROR - invalid float, string %s, line number %d\n", str, line_number);
+    else fprintf(optr ,"ERROR - invalid float (multiple dots found), string %s, line number %d\n", str, line_number);
     return;
 }
 
@@ -91,13 +91,43 @@ void lexer_string_found(char c, FILE* fptr, FILE* optr) {
         if(c_next == '\n' || c_next == '\t') {
             error_string = 1;
         }
+        if(c_next == '\\') {
+            move_pointer_next(fptr);
+            char temp_c = peek_next_char(fptr);
+            if(temp_c == 't' || temp_c == 'n' || temp_c == 'r' || temp_c == '\"' || temp_c == '\'' || temp_c == '\\') {
+                if(temp_c == 't') {
+                    char t = '\t';
+                    strncat(str, &t, 1);
+                } else if(temp_c == 'n') {
+                    char t = '\n';
+                    strncat(str, &t, 1);
+                } else if(temp_c == 'r') {
+                    char t = '\r';
+                    strncat(str, &t, 1);
+                } else if(temp_c == '\"') {
+                    char t = '\"';
+                    strncat(str, &t, 1);
+                } else if(temp_c == '\'') {
+                    char t = '\'';
+                    strncat(str, &t, 1);
+                } else if(temp_c == '\\') {
+                    char t = '\\';
+                    strncat(str, &t, 1);
+                }
+                move_pointer_next(fptr);
+                c_next = peek_next_char(fptr);
+                continue;
+            } else {
+                error_string = 1;
+            }
+        }
         if(c_next == c) count++;
         strncat(str, &c_next, 1);
         move_pointer_next(fptr);
         c_next = peek_next_char(fptr);
         if(c_next == EOF) {
             move_pointer_next(fptr);
-            fprintf(optr, "ERROR - invalid string, string %s, line number %d\n", str, line_number);
+            fprintf(optr, "ERROR - invalid string (no terminating char found), string %s, line number %d\n", str, line_number);
             return;
         }
     }
@@ -105,7 +135,7 @@ void lexer_string_found(char c, FILE* fptr, FILE* optr) {
     strncat(str, &c, 1);
     move_pointer_next(fptr);
 
-    if(error_string == 1 || count > 1) fprintf(optr, "ERROR - invalid string, string %s, line number %d\n", str, line_number);
+    if(error_string == 1 || count > 1) fprintf(optr, "ERROR - invalid string (wrong escape sequence found), string %s, line number %d\n", str, line_number);
     else fprintf(optr, "TK-string, string %s, line number %d\n", str, line_number);
     return;
 }

@@ -86,3 +86,7 @@ These are the reserved keywords by Alpino for its use. For example, loop, var, r
 * ### Delimiters
 
 These include all the paranthesis, semi-colons and commas. '[' and ']' are classified as array delimiters.
+
+* ### Comments
+
+Comments start with //
