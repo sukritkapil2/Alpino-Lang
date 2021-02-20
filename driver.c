@@ -1,6 +1,16 @@
 // this c file scans through the input alpino code and seperates appropriate lexemes
 // which are then sent to the lexer that return the corresponding token
 
+/*
+Group Members
+
+Sukrit - 2018A7PS0205H
+Sneh Lohia - 2018A7PS0171H
+Pranay Pant - 2018A7PS0161H
+Dhiraaj Desai - 2018A7PS0146H
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

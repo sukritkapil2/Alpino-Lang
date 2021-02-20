@@ -1,6 +1,16 @@
 // this file contains the implementation of a DFA that seperates the lexemes received
 // into appopriate tokens
 
+/*
+Group Members
+
+Sukrit - 2018A7PS0205H
+Sneh Lohia - 2018A7PS0171H
+Pranay Pant - 2018A7PS0161H
+Dhiraaj Desai - 2018A7PS0146H
+
+*/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

@@ -10,14 +10,14 @@ fun addFive(x) {
 }
 
 //sequential statements
-var x = (45-0.5678*67)/2.0;
+var x = (45-0.5678*0)/2.0;
 var y = 0;
 x -= y;
 
 y = x;
 
 print(x);
-z = input('Enter a number\');
+z = input('Enter a number\\');
 
 x = addFive(x);
 
