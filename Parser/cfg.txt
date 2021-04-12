@@ -1,0 +1,81 @@
+Start -> P
+P -> S_list
+S_list -> S S_list'
+S -> Dec
+S -> Def
+S -> IE
+S -> L
+S -> break ;
+S -> continue ;
+S -> return P_list ;
+S -> F
+S -> ''
+F -> fun id ( P_list ) B
+Dec -> var id ;
+Def -> id A E ;
+IE -> if ( E ) B elif B
+L -> loop ( id A E ; E ; E ) B
+A -> =
+A -> +=
+A -> -=
+A -> /=
+A -> |=
+P_list -> Prm P_list'
+E -> E1 E'
+E1 -> E2 E1'
+E2 -> E3 E2''
+E3 -> E4 E3''
+E4 -> E5 E4''
+E5 -> M E5''
+M -> id M' M'''
+M -> num M'''
+M -> string M'''
+M -> ( E ) M'''
+M -> - M M'''
+B -> { BS_list }
+BS_list -> BS BS_list'
+BS -> var id ;
+BS -> id A E ;
+BS -> if ( E ) B elif B
+BS -> loop ( id A E ; E ; E ) B
+BS -> break ;
+BS -> continue ;
+BS -> return P_list ;
+BS -> ''
+Prm -> id
+Prm -> ''
+E2' -> == E3
+E2' -> != E3
+E3' -> > E4
+E3' -> < E4
+E3' -> >= E4
+E3' -> <= E4
+E4' -> + E5
+E4' -> - E5
+E5' -> * M
+E5' -> / M
+E5' -> % M
+M' -> ''
+M' -> ( P_list )
+M'' -> ++
+M'' -> --
+S_list' -> S S_list'
+S_list' -> ''
+P_list' -> , Prm P_list'
+P_list' -> ''
+E' -> || E1 E'
+E' -> ''
+E1' -> && E2 E1'
+E1' -> ''
+E2'' -> E2' E2''
+E2'' -> ''
+E3'' -> E3' E3''
+E3'' -> ''
+E4'' -> E4' E4''
+E4'' -> ''
+E5'' -> E5' E5''
+E5'' -> ''
+M''' -> M'' M'''
+M''' -> ''
+BS_list' -> BS BS_list'
+BS_list' -> ''

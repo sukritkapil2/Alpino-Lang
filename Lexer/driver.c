@@ -79,6 +79,9 @@ int main(int argc, char* argv[]) {
         else if(c == '=') {
             lexer_assignment_found(c, fptr, optr);
         }
+        else {
+            fprintf(optr ,"ERROR - invalid character, string %c, line number %d\n", c, line_number);
+        }
 
         
         c = peek_next_char(fptr);
