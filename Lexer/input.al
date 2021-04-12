@@ -1,6 +1,12 @@
 fun print(x, y, z) {
-    var x;
-    x++;
-    x += 5;
-    return x;
+    var id;
+    id += id;
+    return;
+}
+
+if(x == 1) {
+    x = print(x);
+}
+elif {
+    x = print(y);
 }
