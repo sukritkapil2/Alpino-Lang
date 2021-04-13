@@ -1,1 +1,0 @@
-fun id ( id , id , id ) { if ( id == num ) { id += num ; } elif { id -= num ; } } var id ; id += ( id - num ) ;
