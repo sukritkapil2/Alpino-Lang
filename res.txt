@@ -1,0 +1,204 @@
+int of type: TYPEINT on line Num: 1
+main of type: IDENT on line Num: 1
+( of type: ( on line Num: 1
+int of type: TYPEINT on line Num: 1
+x of type: IDENT on line Num: 1
+, of type: , on line Num: 1
+int of type: TYPEINT on line Num: 1
+y of type: IDENT on line Num: 1
+) of type: ) on line Num: 1
+{ of type: { on line Num: 1
+// of type: // on line Num: 2
+let of type: LET on line Num: 3
+int of type: TYPEINT on line Num: 3
+z of type: IDENT on line Num: 3
+= of type: = on line Num: 3
+x of type: IDENT on line Num: 3
++ of type: + on line Num: 3
+y of type: IDENT on line Num: 3
+~ of type: ILLEGAL on line Num: 3
+if of type: IF on line Num: 4
+( of type: ( on line Num: 4
+z of type: IDENT on line Num: 4
+> of type: > on line Num: 4
+0 of type: INT on line Num: 4
+) of type: ) on line Num: 4
+{ of type: { on line Num: 4
+assign of type: ASSIGNKEY on line Num: 5
+z of type: IDENT on line Num: 5
+= of type: = on line Num: 5
+abc of type: IDENT on line Num: 5
+( of type: ( on line Num: 5
+x of type: IDENT on line Num: 5
+, of type: , on line Num: 5
+y of type: IDENT on line Num: 5
+) of type: ) on line Num: 5
+; of type: ; on line Num: 5
+} of type: } on line Num: 6
+else of type: ELSE on line Num: 6
+{ of type: { on line Num: 6
+assign of type: ASSIGNKEY on line Num: 7
+z of type: IDENT on line Num: 7
+= of type: = on line Num: 7
+5 of type: INT on line Num: 7
+* of type: * on line Num: 7
+x of type: IDENT on line Num: 7
+* of type: * on line Num: 7
++ of type: + on line Num: 7
+x of type: IDENT on line Num: 7
+; of type: ; on line Num: 7
+} of type: } on line Num: 8
+while of type: WHILEKEY on line Num: 9
+( of type: ( on line Num: 9
+x of type: IDENT on line Num: 9
+< of type: < on line Num: 9
+0 of type: INT on line Num: 9
+) of type: ) on line Num: 9
+{ of type: { on line Num: 9
+let of type: LET on line Num: 10
+void of type: TYPEVOID on line Num: 10
+zz of type: IDENT on line Num: 10
+= of type: = on line Num: 10
+printf of type: IDENT on line Num: 10
+( of type: ( on line Num: 10
+a of type: IDENT on line Num: 10
+) of type: ) on line Num: 10
+; of type: ; on line Num: 10
+} of type: } on line Num: 11
+return of type: RETURN on line Num: 12
+ff of type: IDENT on line Num: 12
+( of type: ( on line Num: 12
+a of type: IDENT on line Num: 12
+, of type: , on line Num: 12
+b of type: IDENT on line Num: 12
+, of type: , on line Num: 12
+x of type: IDENT on line Num: 12
+) of type: ) on line Num: 12
+* of type: * on line Num: 12
+( of type: ( on line Num: 12
+x of type: IDENT on line Num: 12
++ of type: + on line Num: 12
+y of type: IDENT on line Num: 12
+) of type: ) on line Num: 12
+; of type: ; on line Num: 12
+} of type: } on line Num: 13
+void of type: TYPEVOID on line Num: 15
+printf of type: IDENT on line Num: 15
+( of type: ( on line Num: 15
+int of type: TYPEINT on line Num: 15
+x of type: IDENT on line Num: 15
+) of type: ) on line Num: 15
+{ of type: { on line Num: 15
+return of type: RETURN on line Num: 16
+; of type: ; on line Num: 16
+} of type: } on line Num: 17
+ of type: EOF on line Num: 19
+ of type: EOF on line Num: 19
+PROGRAM
+   FUNCTION
+      RETURNTYPE : int
+      NAME : main
+      ARGS : [ { int x } { int y } ]
+         BODY
+            STATEMENT
+               LETSTMT
+                  TYPE : int
+                  ID : z
+                  EXPRESSION
+                     TERM
+                        Factor
+                           IDENTIFIER -> x
+                     OPERATOR -> +
+                     EXPRESSION
+                        TERM
+                           Factor
+                              IDENTIFIER -> y
+            STATEMENT
+               IF STATEMENT
+                  CHECK
+                     EXPRESSION
+                        TERM
+                           Factor
+                              IDENTIFIER -> z
+                     OPERATOR -> >
+                     EXPRESSION
+                        TERM
+                           Factor
+                              INTEGER -> 0
+                  IFBODY
+                     BODY
+                        STATEMENT
+                           ASSIGNSTMT
+                              ID : z
+                              EXPRESSION
+                                 TERM
+                                    Factor
+                                       FNCALL -> abc [ x y ]
+                  ELSEBODY
+                     BODY
+                        STATEMENT
+                           ASSIGNSTMT
+                              ID : z
+                              EXPRESSION
+                                 TERM
+                                    Factor
+                                       INTEGER -> 5
+                                    OPERATOR -> *
+                                    TERM
+                                       Factor
+                                          IDENTIFIER -> x
+                                       OPERATOR -> *
+                                       TERM
+                                          Factor
+                                             IDENTIFIER -> x
+            STATEMENT
+               WHILE_LOOP
+                  CONDITION
+                     CHECK
+                        EXPRESSION
+                           TERM
+                              Factor
+                                 IDENTIFIER -> x
+                        OPERATOR -> <
+                        EXPRESSION
+                           TERM
+                              Factor
+                                 INTEGER -> 0
+                                    BODY
+                     STATEMENT
+                        LETSTMT
+                           TYPE : void
+                           ID : zz
+                           EXPRESSION
+                              TERM
+                                 Factor
+                                    FNCALL -> printf [ a ]
+            STATEMENT
+               RETURN
+                  EXPRESSION
+                     TERM
+                        Factor
+                           FNCALL -> ff [ a b x ]
+                        OPERATOR -> *
+                        TERM
+                           Factor
+                              EXPRESSION
+                                 TERM
+                                    Factor
+                                       IDENTIFIER -> x
+                                 OPERATOR -> +
+                                 EXPRESSION
+                                    TERM
+                                       Factor
+                                          IDENTIFIER -> y
+   FUNCTION
+      RETURNTYPE : void
+      NAME : printf
+      ARGS : [ { int x } ]
+         BODY
+            STATEMENT
+               RETURN
+
+ILLEGAL Token : ~ of type: ILLEGAL on line Num: 3
+Semicolon missing got  : y of type: IDENT on line Num: 3
+Unexpected token for a factor : + of type: + on line Num: 7

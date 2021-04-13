@@ -1,12 +1,5 @@
-fun print(x, y, z) {
-    var id;
-    id += id;
-    return;
+fun ( {
+
 }
 
-if(x == 1) {
-    x = print(x);
-}
-elif {
-    x = print(y);
-}
+id = id + id ;

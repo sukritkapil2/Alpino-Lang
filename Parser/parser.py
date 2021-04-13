@@ -1,5 +1,6 @@
 # import the libraries
 import pandas as pd
+import math
 
 # import the parse table
 df_action = pd.read_excel('lalr_parse_table.xlsx', sheet_name='Sheet1')
@@ -36,6 +37,7 @@ def pop_stack(LHS, RHS, stack):
 tokens = open('../Lexer/output.txt')
 
 input_string_file = open('input.txt', 'w')
+parsed_output_file = open('parsed_syntax.txt', 'w')
 
 # import the grammar
 cfg = open('cfg.txt')
@@ -100,14 +102,36 @@ while(counter < len(tokens_list)):
         print('\n[SUCCESS] String Accepted!\n')
         exit()
 
+    if(str(val) == 'nan'):
+        print("\n[ERROR] Popping Stack and Skipping till the safe symbol...\n")
+
+        while(counter < len(tokens_list) and (tokens_list[counter] != ';' and tokens_list[counter] != '}')):
+            counter += 1
+
+        counter += 1
+
+        if(counter >= len(tokens_list)):
+            break
+
+        while(len(stack) != 0):
+            stack.pop()
+
+        stack.append(0)
+        
+        val = df_action[tokens_list[counter]][0]
+        token_part = str(tokens_list[counter])
+
+
     if(str(val).find('/') != -1):
         val = str(val).split('/')[0].strip(" ")
         
     # if it is a shift action
     if(str(val)[0] == 's'):
         stack.append(token_part)
+
         stack.append(int(str(val)[1:]))
         counter += 1
+    
     # if it is a reduce action
     else:
         rule_num = int(str(val)[1:])
