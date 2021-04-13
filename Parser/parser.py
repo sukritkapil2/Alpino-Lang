@@ -5,4 +5,7 @@ from parser_functions import *
 tokens_list = make_tokens_list(input_string_file)
 
 # append a 0 to the stack
-begin_parsing(tokens_list)
+tree = begin_parsing(tokens_list)
+
+# draw the syntax tree
+draw_tree(tree, 0)

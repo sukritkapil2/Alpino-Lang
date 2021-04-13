@@ -1,5 +1,6 @@
 import pandas as pd
 import math
+import pydot
 
 # converting tokens to appropriate terminal
 switcher = {
@@ -16,15 +17,31 @@ input_string_file = open('input.txt', 'w')
 parsed_output_file = open('parsed_syntax.txt', 'w')
 cfg = open('cfg.txt')
 
+class Node:
+
+    def __init__(self, data):
+        self.children = []
+        self.data = data
+
+    def add_child(self, node):
+        self.children.append(node)
+
 def pop_stack(LHS, RHS, stack):
+
+    LHS_node = Node(LHS)
+
     done = False
     while(done is not True):
         if(RHS[-1] == "''"):
+            LHS_node.add_child(Node(''))
             break
         if(str(stack[-1]).isnumeric() == True):
             stack.pop()
         else:
-            if(str(RHS[-1]) == str(stack[-1])):
+            if(str(RHS[-1]) == str(stack[-1].data)):
+
+                LHS_node.add_child(stack[-1])
+
                 RHS.pop()
                 stack.pop()
 
@@ -33,7 +50,8 @@ def pop_stack(LHS, RHS, stack):
             else:
                 print('Error')
                 exit()
-    stack.append(LHS)
+                
+    stack.append(LHS_node)
     stack.append(int(df_goto[str(LHS)][stack[-2]]))
     return stack
 
@@ -67,35 +85,49 @@ def make_tokens_list(input_string_file):
 
 
 def begin_parsing(tokens_list):
+
     stack = []
     grammar_rules = cfg.readlines()
+
     stack.append(0)
+
     counter = 0
+
     while(counter < len(tokens_list)):
         num = stack[-1]
+
         token_part = str(tokens_list[counter])
+        token_node = Node(token_part)
+
         print(f"Table Entry [{token_part}][{num}]")
+
         val = df_action[token_part][num]
+
         if(val == 'acc'):
             print('\n[SUCCESS] String Accepted!\n')
-            exit()
+            return stack[1]
+        
         if(str(val) == 'nan'):
             print("\n[ERROR] Popping Stack and Skipping till the safe symbol...\n")
             while(counter < len(tokens_list) and (tokens_list[counter] != ';' and tokens_list[counter] != '}')):
                 counter += 1
             counter += 1
-            if(counter >= len(tokens_list)):
+            if(counter >= len(tokens_list)-1):
+                print("\nEOF reached, no valid statements found after a safe symbol...\n")
                 break
-            while(len(stack) != 0):
-                stack.pop()
+            stack.clear()
             stack.append(0)
             val = df_action[tokens_list[counter]][0]
+
             token_part = str(tokens_list[counter])
+            token_node = Node(token_part)
+        
         if(str(val).find('/') != -1):
             val = str(val).split('/')[0].strip(" ")
+
         # if it is a shift action
         if(str(val)[0] == 's'):
-            stack.append(token_part)
+            stack.append(token_node)
             stack.append(int(str(val)[1:]))
             counter += 1
         # if it is a reduce action
@@ -107,4 +139,21 @@ def begin_parsing(tokens_list):
             LHS = str(rule[0]).rstrip()
 
             stack = pop_stack(LHS, RHS, stack)
-        print(stack)
+
+        for item in stack:
+            if(str(item).isnumeric() == True):
+                print(item, end = ", ")
+            else:
+                print(item.data, end = ", ")
+        print()
+
+    return stack[1]
+
+
+def draw_tree(tree, level):
+    for i in range(0, level):
+        parsed_output_file.write("    ")
+    parsed_output_file.write(tree.data + "\n")
+
+    for child in tree.children:
+        draw_tree(child, level + 1)
