@@ -248,7 +248,6 @@ void lexer_operator_found(char c, FILE* fptr, FILE* optr) {
                     move_pointer_next(fptr);
                     c_next = peek_next_char(fptr);
                 }
-                fprintf(optr, "TK-comment (skipping comment line), string //, line number %d\n", line_number);
             } else if(c_next == '=') {
                 move_pointer_next(fptr);
                 fprintf(optr, "TK-operator, string /=, line number %d\n", line_number);

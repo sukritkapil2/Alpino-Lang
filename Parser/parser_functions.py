@@ -56,7 +56,7 @@ def pop_stack(LHS, RHS, stack):
     return stack
 
 
-def make_tokens_list(input_string_file):
+def make_tokens_list():
     tokens_list = []
     lines = tokens.readlines()
 
