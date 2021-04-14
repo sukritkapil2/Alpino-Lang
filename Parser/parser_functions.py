@@ -12,7 +12,7 @@ switcher = {
 # open all the necessary files
 df_action = pd.read_excel('lalr_parse_table.xlsx', sheet_name='Sheet1')
 df_goto = pd.read_excel('lalr_parse_table.xlsx', sheet_name='Sheet2')
-tokens = open('../Lexer/output.txt')
+tokens = open('../Lexer/output.txt', 'r')
 input_string_file = open('input.txt', 'w')
 parsed_output_file = open('parsed_syntax.txt', 'w')
 cfg = open('cfg.txt')
@@ -54,26 +54,46 @@ def pop_stack(LHS, RHS, stack):
     stack.append(LHS_node)
     stack.append(int(df_goto[str(LHS)][stack[-2]]))
     return stack
+    
+def get_error_lines():
+    lines = tokens.readlines()
+    errors = []
 
+    for line in lines:
+        split_line = line.split(',')
+        if(split_line[0][:5] == 'ERROR'):
+            errors.append(str(split_line[2][12:]).strip(' ')[:-1])
+
+    return errors
 
 def make_tokens_list():
+    
+
+    errors = get_error_lines()
+
+    tokens = open('../Lexer/output.txt', 'r')
     tokens_list = []
     lines = tokens.readlines()
 
     for line in lines:
         split_line = line.split(',')
-        if(split_line[0][:5] == 'ERROR'):
-            print('Lexical Error Found. Exiting ...')
-            exit()
         token = split_line[0][3:]
         string = split_line[1][8:]
+
+        line_number = 0
+
         # the string is ,
         if(len(string) == 0):
             string = ','
-        if(token == 'keyword' or token == 'delimiter' or token == 'operator' or token == 'assignment'):
-            tokens_list.append(string)
+            line_number = str(split_line[3][12:]).strip(' ')[:-1]
         else:
-            tokens_list.append(switcher.get(token))
+            line_number = str(split_line[2][12:]).strip(' ')[:-1]
+        
+        if(line_number not in errors):
+            if(token == 'keyword' or token == 'delimiter' or token == 'operator' or token == 'assignment'):
+                tokens_list.append(string)
+            else:
+                tokens_list.append(switcher.get(token))
 
     for token in tokens_list:
         input_string_file.write(str(token) + ' ')
@@ -109,6 +129,10 @@ def begin_parsing(tokens_list):
         
         if(str(val) == 'nan'):
             print("\n[ERROR] Popping Stack and Skipping till the safe symbol...\n")
+            
+            if(tokens_list[counter] == ';' or tokens_list[counter] == '}'):
+                counter += 1
+
             while(counter < len(tokens_list) and (tokens_list[counter] != ';' and tokens_list[counter] != '}')):
                 counter += 1
             counter += 1
@@ -117,6 +141,7 @@ def begin_parsing(tokens_list):
                 break
             stack.clear()
             stack.append(0)
+            
             val = df_action[tokens_list[counter]][0]
 
             token_part = str(tokens_list[counter])
